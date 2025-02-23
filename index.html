@@ -22,7 +22,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Pokémon Guessing Game 3</h1>
+    <h1>Pokémon Guessing Game 4</h1>
     <input type="text" id="guess" placeholder="Guess the Pokémon">
     <button onclick="checkGuess()">Guess</button>
     <p id="message"></p>
@@ -145,36 +145,37 @@
 function generateHint(guessValue, secretValue) {
   let className = 'red';  // Domyślnie czerwona
 
-  // Sprawdzamy, czy secretValue jest tablicą (ma dwa typy)
+  // Jeśli secretValue to tablica (tzn. Pokémon ma 2 typy)
   if (Array.isArray(secretValue)) {
-    // Sprawdzamy, czy guessValue pasuje do pierwszego typu
+    // Sprawdzamy, czy guessValue pasuje do type1 szukanego Pokémona
     if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase()) {
       className = 'green';  // Jeśli pasuje do typu1
     }
-    // Sprawdzamy, czy guessValue pasuje do drugiego typu
+    // Sprawdzamy, czy guessValue pasuje do type2 szukanego Pokémona
     if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
       className = 'green';  // Jeśli pasuje do typu2
     }
-
-    // Teraz sprawdzamy odwrotne dopasowanie
-    // Typ1 Ekansa (Poison) w typ2 szukanego Pokémona
-    if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'yellow';  // Jeżeli pasuje do typu2
+    
+    // Sprawdzamy odwrotność, czyli:
+    // Czy typ1 zgadywanego Pokémona pasuje do typ2 szukanego Pokémona (żółty)
+    if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
+      className = 'yellow';  // Jeśli pasuje do odwrotnego typu
     }
 
-    // Typ2 Ekansa (Poison) w typ1 szukanego Pokémona
-    if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'yellow';  // Jeżeli pasuje do typu1
+    // Czy typ2 zgadywanego Pokémona pasuje do typ1 szukanego Pokémona (żółty)
+    if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase()) {
+      className = 'yellow';  // Jeśli pasuje do odwrotnego typu
     }
   } else if (secretValue) {
-    // Jeśli Pokémon ma tylko jeden typ
+    // Jeśli Pokémon ma tylko jeden typ, sprawdzamy tylko jedno porównanie
     if (secretValue.toLowerCase() === guessValue.toLowerCase()) {
-      className = 'green';  // Jeśli zgadnięty typ pasuje do typu
+      className = 'green';  // Jeśli zgadnięty typ pasuje
     }
   }
 
   return `<td class="${className}">${guessValue || 'N/A'}</td>`;
 }
+
   </script>
 </body>
 </html>
