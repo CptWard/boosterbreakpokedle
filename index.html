@@ -142,23 +142,24 @@
     }
 
     // Funkcja do określania kolorów dla typu1/2
-    function generateHint(guessValue, secretValue, reverseGuessValue, reverseSecretValue) {
-      let className = 'red';  // Domyślnie czerwona
+    function generateHint(guessValue, secretValue) {
+  let className = 'red';  // Domyślnie czerwona
 
-      if (guessValue === 'N/A') {
-        if (secretValue === 'N/A') {
-          className = 'green';  // Typ2 nie istnieje w obu przypadkach
-        } else {
-          className = 'red';  // Jeśli szukany Pokémon ma typ2
-        }
-      } else if (guessValue === secretValue || reverseGuessValue === reverseSecretValue) {
-        className = 'green';  // Jeśli wartości są identyczne
-      } else if (guessValue === reverseSecretValue || reverseGuessValue === secretValue) {
-        className = 'yellow';  // Jeśli typy są zamienione, ale zgodne
-      }
+  if (guessValue === secretValue) {
+    className = 'green';  // Jeśli wartości są zgodne
+  } else if (guessValue === 'N/A' && secretValue === 'N/A') {
+    className = 'green';  // Oba nie mają wartości, więc są zgodne
+  } else if (guessValue !== 'N/A' && secretValue === 'N/A') {
+    className = 'red';  // Jeśli zgadywany Pokémon ma typ, a szukany nie
+  } else if (secretValue !== 'N/A' && guessValue === 'N/A') {
+    className = 'red';  // Jeśli szukany Pokémon ma typ, a zgadywany nie
+  } else {
+    // Sprawdzamy odwrotność, czyli jeśli typy są zamienione
+    className = 'yellow';  // Jeśli typy się zamieniają, ale są zgodne
+  }
 
-      return `<td class="${className}">${guessValue || 'N/A'}</td>`;
-    }
+  return `<td class="${className}">${guessValue || 'N/A'}</td>`;
+}
   </script>
 </body>
 </html>
