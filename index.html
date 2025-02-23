@@ -145,37 +145,36 @@
 function generateHint(guessValue, secretValue) {
   let className = 'red';  // Domyślnie czerwona
 
-  // Jeśli secretValue to tablica (tzn. Pokémon ma 2 typy)
+  // Jeśli secretValue jest tablicą (tzn. Pokémon ma 2 typy)
   if (Array.isArray(secretValue)) {
-    // Sprawdzamy, czy guessValue pasuje do type1 szukanego Pokémona
+    // Sprawdzamy, czy guessValue pasuje do typów w szukanym Pokemonie
     if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'green';  // Jeśli pasuje do typu1
-    }
-    // Sprawdzamy, czy guessValue pasuje do type2 szukanego Pokémona
-    if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'green';  // Jeśli pasuje do typu2
-    }
-    
-    // Sprawdzamy odwrotność, czyli:
-    // Czy typ1 zgadywanego Pokémona pasuje do typ2 szukanego Pokémona (żółty)
-    if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'yellow';  // Jeśli pasuje do odwrotnego typu
+      className = 'green';  // Pasuje do typu 1
     }
 
-    // Czy typ2 zgadywanego Pokémona pasuje do typ1 szukanego Pokémona (żółty)
+    if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
+      className = 'green';  // Pasuje do typu 2
+    }
+
+    // Dodatkowo sprawdzamy odwrotność, czyli:
+    // Czy typ1 w zgadywanym pasuje do typ2 w szukanym (żółty)
+    if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
+      className = 'yellow';  // Pasuje do odwrotnego typu
+    }
+
+    // Czy typ2 w zgadywanym pasuje do typ1 w szukanym (żółty)
     if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'yellow';  // Jeśli pasuje do odwrotnego typu
+      className = 'yellow';  // Pasuje do odwrotnego typu
     }
   } else if (secretValue) {
     // Jeśli Pokémon ma tylko jeden typ, sprawdzamy tylko jedno porównanie
     if (secretValue.toLowerCase() === guessValue.toLowerCase()) {
-      className = 'green';  // Jeśli zgadnięty typ pasuje
+      className = 'green';  // Pasuje do typu
     }
   }
 
   return `<td class="${className}">${guessValue || 'N/A'}</td>`;
 }
-
   </script>
 </body>
 </html>
