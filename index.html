@@ -22,7 +22,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Pokémon Guessing Game 1</h1>
+    <h1>Pokémon Guessing Game 2</h1>
     <input type="text" id="guess" placeholder="Guess the Pokémon">
     <button onclick="checkGuess()">Guess</button>
     <p id="message"></p>
@@ -86,7 +86,7 @@
       const row = `<tr>
         <td><img src="${guessPokemon.image.thumbnail}" alt="${guessPokemon.name.english}"></td>
         ${generateHint(guessPokemon.type[0], secretPokemonData.type[0])}
-        ${generateHint(guessPokemon.type[1], secretPokemonData.type[1] || 'N/A')}
+        ${generateHint(guessPokemon.type[1] || 'N/A', secretPokemonData.type[1] || 'N/A')}
         ${generateRegion(guessPokemon.id, secretPokemonData.id)}
         ${generateHighestStat(highestStat.value, highestStat.name, highestStat.value === highestStat.secretValue, highestStat.name === highestStat.secretName)}
         ${generateHint(guessPokemon.profile.height, secretPokemonData.profile.height)}
@@ -145,12 +145,13 @@
 function generateHint(guessValue, secretValue) {
   let className = 'red';  // Domyślnie czerwona
 
-  // Jeśli secretValue jest tablicą, oznacza to, że Pokémon ma dwa typy
+  // Sprawdzamy, czy secretValue jest tablicą (dwa typy)
   if (Array.isArray(secretValue)) {
     // Sprawdzamy, czy guessValue pasuje do type1 lub type2
     if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase()) {
       className = 'yellow';  // Jeśli pasuje do pierwszego typu
     }
+    // Tylko wtedy sprawdzamy drugi typ, jeśli istnieje
     if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
       className = 'yellow';  // Jeśli pasuje do drugiego typu
     }
