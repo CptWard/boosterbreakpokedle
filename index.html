@@ -87,8 +87,8 @@
         <td><img src="${guessPokemon.image.thumbnail}" alt="${guessPokemon.name.english}"></td>
         ${generateHint(guessPokemon.type[0], secretPokemonData.type[0])}
         ${generateHint(guessPokemon.type[1], secretPokemonData.type[1] || 'N/A')}
-        ${generateRegion(guessPokemon.id)}
-        ${generateHighestStat(highestStat.value, highestStat.name)}
+        ${generateRegion(guessPokemon.id, secretPokemonData.id)}
+        ${generateHighestStat(highestStat.value, highestStat.name, highestStat.value === highestStat.secretValue, highestStat.name === highestStat.secretName)}
         ${generateHint(guessPokemon.profile.height, secretPokemonData.profile.height)}
         ${generateHint(guessPokemon.profile.weight, secretPokemonData.profile.weight)}
       </tr>`;
@@ -101,23 +101,43 @@
       const stats = pokemon.base;
       const highestStatValue = Math.max(...Object.values(stats));
       const highestStatName = Object.keys(stats).find(key => stats[key] === highestStatValue);
-      return { value: highestStatValue, name: highestStatName };
+      const secretStats = pokemonData.find(pokemon => pokemon.name.english === secretPokemon).base;
+      const secretHighestStatValue = Math.max(...Object.values(secretStats));
+      const secretHighestStatName = Object.keys(secretStats).find(key => secretStats[key] === secretHighestStatValue);
+      return { 
+        value: highestStatValue, 
+        name: highestStatName,
+        secretValue: secretHighestStatValue,
+        secretName: secretHighestStatName
+      };
     }
 
     // Funkcja do określania regionu na podstawie ID
-    function generateRegion(id) {
-      for (let region in regions) {
-        const regionData = regions[region];
-        if (id >= regionData.minId && id <= regionData.maxId) {
-          return `<td>${region}</td>`;
+    function generateRegion(guessId, secretId) {
+      let region = 'Unknown';
+      let className = 'red';  // Domyślnie czerwony
+
+      for (let regionName in regions) {
+        const regionData = regions[regionName];
+        if (guessId >= regionData.minId && guessId <= regionData.maxId) {
+          region = regionName;
+          if (guessId >= regionData.minId && guessId <= regionData.maxId && guessId === secretId) {
+            className = 'green';  // Jeśli region zgadza się z regionem sekretnego Pokémona
+          }
         }
       }
-      return `<td>Unknown</td>`;  // Jeśli ID nie pasuje do żadnego regionu
+      return `<td class="${className}">${region}</td>`;
     }
 
     // Funkcja do generowania najwyższej statystyki
-    function generateHighestStat(value, statName) {
-      return `<td class="${value === undefined ? 'red' : 'green'}">${value} (${statName})</td>`;
+    function generateHighestStat(value, statName, correctValue, correctStat) {
+      let className = 'red';  // Domyślnie czerwona
+      if (correctValue && correctStat) {
+        className = 'green';  // Jeśli zarówno wartość, jak i statystyka są zgodne
+      } else if (correctStat) {
+        className = 'yellow';  // Jeśli statystyka jest poprawna, ale wartość nie
+      }
+      return `<td class="${className}">${value} (${statName})</td>`;
     }
 
     // Funkcja do generowania wskazówek z odpowiednimi kolorami
