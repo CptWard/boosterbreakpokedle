@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon Guessing Game</title>
+  <style>
+    body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f3f4f6; }
+    .container { text-align: center; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); width: 90%; }
+    input { padding: 8px; border-radius: 8px; border: 1px solid #ccc; }
+    button { padding: 8px 12px; border-radius: 8px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; width: 80px; height: 80px; }
+    .green { background-color: #4CAF50; color: white; }
+    .yellow { background-color: #FFC107; color: black; }
+    .red { background-color: #F44336; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Pokémon Guessing Game</h1>
+    <input type="text" id="guess" placeholder="Guess the Pokémon">
+    <button onclick="checkGuess()">Guess</button>
+    <p id="message"></p>
+
+    <table id="hints-table">
+      <tr>
+        <th>Pokémon</th>
+        <th>Type 1</th>
+        <th>Type 2</th>
+        <th>Color</th>
+        <th>Habitat</th>
+        <th>Evolution Stage</th>
+        <th>Height</th>
+        <th>Weight</th>
+      </tr>
+    </table>
+
+    <h2>Set Secret Pokémon</h2>
+    <p id="secret-pokemon-message">The secret Pokémon is set in the code.</p>
+  </div>
+
+  <script>
+    let pokemonData = [];
+    let secretPokemon = 'Bulbasaur';  // Secret Pokémon is set directly here in the code
+
+    // Fetch the pokedex data
+    fetch('pokedex.json')
+      .then(response => response.json())
+      .then(data => {
+        pokemonData = data;
+        console.log("Pokémon Data Loaded:", pokemonData);
+      })
+      .catch(error => {
+        console.error("Error loading Pokémon data:", error);
+      });
+
+    function checkGuess() {
+      const guess = document.getElementById('guess').value.trim();
+      const guessPokemon = pokemonData.find(pokemon => pokemon.name.english.toLowerCase() === guess.toLowerCase());
+      
+      if (!guessPokemon) {
+        document.getElementById('message').textContent = '❌ Pokémon not found!';
+        return;
+      }
+
+      const secretPokemonData = pokemonData.find(pokemon => pokemon.name.english === secretPokemon);
+      document.getElementById('message').textContent = guess === secretPokemon ? '🎉 Correct! You guessed the Pokémon!' : '❌ Wrong guess, try again!';
+
+      const row = `<tr>
+        <td>${guessPokemon.name.english}</td>
+        ${generateHint(guessPokemon.type[0], secretPokemonData.type[0])}
+        ${generateHint(guessPokemon.type[1] || '', secretPokemonData.type[1] || '')}
+        ${generateHint(guessPokemon.species, secretPokemonData.species)}
+        ${generateHint(guessPokemon.profile.height, secretPokemonData.profile.height)}
+        ${generateHint(guessPokemon.profile.weight, secretPokemonData.profile.weight)}
+      </tr>`;
+
+      document.getElementById('hints-table').innerHTML += row;
+    }
+
+    function generateHint(guessValue, secretValue) {
+      let className = 'red';
+      if (guessValue === secretValue) {
+        className = 'green';
+      } else if (guessValue && secretValue && typeof guessValue === 'string' && guessValue.includes(secretValue.substring(0, 3))) {
+        className = 'yellow';
+      }
+      return `<td class="${className}">${guessValue || 'N/A'}</td>`;
+    }
+  </script>
+</body>
+</html>
