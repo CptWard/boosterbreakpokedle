@@ -143,19 +143,25 @@
 
     // Funkcja do generowania wskazówek z odpowiednimi kolorami
     function generateHint(guessValue, secretValue) {
-      let className = 'red';  // Domyślnie czerwona
-      if (guessValue === secretValue) {
-        className = 'green';  // Jeśli wartości są identyczne
-      } else if (guessValue && secretValue) {
-        // Dla przypadków, w których wartości są podobne (np. typy, waga)
-        if (typeof guessValue === 'string' && secretValue.includes(guessValue.substring(0, 3))) {
-          className = 'yellow';  // Jeśli pierwszy fragment pasuje
-        } else if (typeof guessValue === 'number' && Math.abs(guessValue - secretValue) <= 0.5) {
-          className = 'yellow';  // Jeśli różnica w wartościach liczbowych jest mała
-        }
+  let className = 'red';  // Domyślnie czerwona
+  if (guessValue === secretValue) {
+    className = 'green';  // Jeśli wartości są identyczne
+  } else if (guessValue && secretValue) {
+    // Sprawdzamy, czy typ pasuje do któregokolwiek z typów (type1 lub type2)
+    if (typeof guessValue === 'string') {
+      // Sprawdzamy, czy guessValue pasuje do secretValue (uwzględniając oba typy)
+      if (secretValue.includes(guessValue.substring(0, 3))) {
+        className = 'yellow';  // Jeśli pierwszy fragment pasuje
       }
-      return `<td class="${className}">${guessValue || 'N/A'}</td>`;
+    } else if (Array.isArray(guessValue)) {
+      // Jeśli mamy dwa typy (np. "Poison" i "Grass"), to sprawdzamy obydwa
+      if (guessValue.some(type => secretValue.includes(type))) {
+        className = 'yellow';  // Jeśli przynajmniej jeden typ pasuje do któregoś z typów
+      }
     }
+  }
+  return `<td class="${className}">${guessValue || 'N/A'}</td>`;
+}
   </script>
 </body>
 </html>
