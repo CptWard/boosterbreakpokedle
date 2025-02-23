@@ -121,7 +121,8 @@
         const regionData = regions[regionName];
         if (guessId >= regionData.minId && guessId <= regionData.maxId) {
           region = regionName;
-          if (guessId >= regionData.minId && guessId <= regionData.maxId && guessId === secretId) {
+          // Zmieniamy tło regionu tylko na zielone, jeśli zgadujemy odpowiedniego Pokémona
+          if (secretId >= regionData.minId && secretId <= regionData.maxId) {
             className = 'green';  // Jeśli region zgadza się z regionem sekretnego Pokémona
           }
         }
