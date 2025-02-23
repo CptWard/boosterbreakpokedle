@@ -142,22 +142,26 @@
     }
 
     // Funkcja do generowania wskazówek z odpowiednimi kolorami
-   function generateHint(guessValue, secretValue) {
+function generateHint(guessValue, secretValue) {
   let className = 'red';  // Domyślnie czerwona
 
-  // Sprawdzamy, czy secretValue to tablica (Pokémon ma dwa typy)
+  // Sprawdzamy, czy secretValue jest tablicą (Pokémon ma dwa typy)
   if (Array.isArray(secretValue)) {
     // Sprawdzamy, czy guessValue pasuje do któregokolwiek z typów w secretValue (type1 lub type2)
-    if (secretValue.some(type => type.toLowerCase() === guessValue.toLowerCase())) {
-      className = 'yellow';  // Jeśli pasuje do któregokolwiek typu (type1 lub type2)
+    if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase()) {
+      className = 'yellow';  // Jeśli pasuje do type1
+    }
+    if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
+      className = 'yellow';  // Jeśli pasuje do type2
+    }
 
-      // Jeśli oba typy zgadzają się dokładnie z guessValue, zmieniamy kolor na zielony
-      if (secretValue[0].toLowerCase() === guessValue.toLowerCase() && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
-        className = 'green';
-      }
+    // Jeśli oba typy zgadzają się dokładnie z guessValue, zmieniamy kolor na zielony
+    if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase() &&
+        secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
+      className = 'green';
     }
   } else if (secretValue) {
-    // Jeżeli secretValue to pojedynczy typ, porównujemy go z guessValue
+    // Jeśli secretValue to pojedynczy typ (nie tablica)
     if (secretValue.toLowerCase() === guessValue.toLowerCase()) {
       className = 'green';  // Jeśli typy są identyczne
     }
@@ -165,8 +169,6 @@
 
   return `<td class="${className}">${guessValue || 'N/A'}</td>`;
 }
-
-
   </script>
 </body>
 </html>
