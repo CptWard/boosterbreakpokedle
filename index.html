@@ -13,11 +13,10 @@
     button { padding: 8px 12px; border-radius: 8px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
     button:hover { background-color: #0056b3; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; width: 120px; height: 120px; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; width: 100px; height: 100px; }
     .green { background-color: #4CAF50; color: white; }
     .yellow { background-color: #FFC107; color: black; }
     .red { background-color: #F44336; color: white; }
-    img { width: 80px; height: 80px; }
   </style>
 </head>
 <body>
@@ -41,10 +40,7 @@
   </div>
 
   <script>
-    let pokemonData = [];
-    let secretPokemon = 'Bulbasaur';
-
-    // Zakodowanie regionów Pokémonów na podstawie ID
+    // Zdefiniowana lista regionów
     const regions = {
       Kanto: { minId: 1, maxId: 151 },
       Johto: { minId: 152, maxId: 251 },
@@ -53,66 +49,62 @@
       Unova: { minId: 494, maxId: 649 },
       Kalos: { minId: 650, maxId: 721 },
       Alola: { minId: 722, maxId: 809 },
-      Galar: { minId: 810, maxId: 898 }
+      Galar: { minId: 810, maxId: 898 },
     };
 
-    // Załaduj dane z pliku JSON
-    fetch('pokedex.json')
-      .then(response => response.json())
-      .then(data => {
-        pokemonData = data;
-        console.log("Pokémon Data Loaded:", pokemonData);
-      })
-      .catch(error => {
-        console.error("Error loading Pokémon data:", error);
-      });
+    const pokemonData = [
+      {
+        id: 1,
+        name: { english: "Bulbasaur", japanese: "フシギダネ", chinese: "妙蛙种子", french: "Bulbizarre" },
+        type: ["Grass", "Poison"],
+        base: { HP: 45, Attack: 49, Defense: 49, "Sp. Attack": 65, "Sp. Defense": 65, Speed: 45 },
+        species: "Seed Pokémon",
+        profile: { height: "0.7 m", weight: "6.9 kg" },
+        image: { thumbnail: "https://raw.githubusercontent.com/Purukitto/pokemon-data.json/master/images/pokedex/thumbnails/001.png" }
+      },
+      {
+        id: 2,
+        name: { english: "Ivysaur", japanese: "フシギソウ", chinese: "妙蛙草", french: "Herbizarre" },
+        type: ["Grass", "Poison"],
+        base: { HP: 60, Attack: 62, Defense: 63, "Sp. Attack": 80, "Sp. Defense": 80, Speed: 60 },
+        species: "Seed Pokémon",
+        profile: { height: "1 m", weight: "13 kg" },
+        image: { thumbnail: "https://raw.githubusercontent.com/Purukitto/pokemon-data.json/master/images/pokedex/thumbnails/002.png" }
+      }
+      // Możesz dodać więcej Pokémonów tutaj...
+    ];
 
-    // Funkcja do sprawdzania zgadywanego Pokémona
-    function checkGuess() {
-      const guess = document.getElementById('guess').value.trim();
-      const guessPokemon = pokemonData.find(pokemon => pokemon.name.english.toLowerCase() === guess.toLowerCase());
+    let secretPokemon = pokemonData[0]; // Domyślnie ustawiamy Bulbasaura jako Pokémon do zgadnięcia
 
-      if (!guessPokemon) {
-        document.getElementById('message').textContent = '❌ Pokémon not found!';
-        return;
+    function generateHint(guessValue, secretValue) {
+      let className = 'red';  // Domyślnie czerwona
+
+      if (guessValue === secretValue) {
+        className = 'green';  // Jeśli wartości są zgodne
+      } else if (guessValue === 'N/A' && secretValue === 'N/A') {
+        className = 'green';  // Oba nie mają wartości, więc są zgodne
+      } else if (guessValue !== 'N/A' && secretValue === 'N/A') {
+        className = 'red';  // Jeśli zgadywany Pokémon ma typ, a szukany nie
+      } else if (secretValue !== 'N/A' && guessValue === 'N/A') {
+        className = 'red';  // Jeśli szukany Pokémon ma typ, a zgadywany nie
+      } else {
+        className = 'yellow';  // Jeśli typy są zamienione
       }
 
-      const secretPokemonData = pokemonData.find(pokemon => pokemon.name.english === secretPokemon);
-      const highestStat = getHighestStat(guessPokemon);
-
-      document.getElementById('message').textContent = guess === secretPokemon ? '🎉 Correct! You guessed the Pokémon!' : '❌ Wrong guess, try again!';
-
-      // Dodaj dane do tabeli
-      const row = `<tr>
-        <td><img src="${guessPokemon.image.thumbnail}" alt="${guessPokemon.name.english}"></td>
-        ${generateHint(guessPokemon.type[0], secretPokemonData.type[0], guessPokemon.type[1], secretPokemonData.type[1])}
-        ${generateHint(guessPokemon.type[1], secretPokemonData.type[1], guessPokemon.type[0], secretPokemonData.type[0])}
-        ${generateRegion(guessPokemon.id, secretPokemonData.id)}
-        ${generateHighestStat(highestStat.value, highestStat.name, highestStat.value === highestStat.secretValue, highestStat.name === highestStat.secretName)}
-        ${generateHint(guessPokemon.profile.height, secretPokemonData.profile.height)}
-        ${generateHint(guessPokemon.profile.weight, secretPokemonData.profile.weight)}
-      </tr>`;
-
-      document.getElementById('hints-table').innerHTML += row;
+      return `<td class="${className}">${guessValue || 'N/A'}</td>`;
     }
 
-    // Funkcja do znalezienia najwyższej statystyki
-    function getHighestStat(pokemon) {
-      const stats = pokemon.base;
-      const highestStatValue = Math.max(...Object.values(stats));
-      const highestStatName = Object.keys(stats).find(key => stats[key] === highestStatValue);
-      const secretStats = pokemonData.find(pokemon => pokemon.name.english === secretPokemon).base;
-      const secretHighestStatValue = Math.max(...Object.values(secretStats));
-      const secretHighestStatName = Object.keys(secretStats).find(key => secretStats[key] === secretHighestStatValue);
-      return { 
-        value: highestStatValue, 
-        name: highestStatName,
-        secretValue: secretHighestStatValue,
-        secretName: secretHighestStatName
-      };
+    function generateHighestStat(value, statName, correctValue, correctStat) {
+      let className = 'red';  // Domyślnie czerwona
+
+      if (correctValue && correctStat) {
+        className = 'green';  // Jeśli zarówno wartość, jak i statystyka są zgodne
+      } else if (correctStat) {
+        className = 'yellow';  // Jeśli statystyka jest poprawna, ale wartość nie
+      }
+      return `<td class="${className}">${value} (${statName})</td>`;
     }
 
-    // Funkcja do określania regionu na podstawie ID
     function generateRegion(guessId, secretId) {
       let region = 'Unknown';
       let className = 'red';  // Domyślnie czerwony
@@ -130,36 +122,47 @@
       return `<td class="${className}">${region}</td>`;
     }
 
-    // Funkcja do generowania najwyższej statystyki
-    function generateHighestStat(value, statName, correctValue, correctStat) {
-      let className = 'red';  // Domyślnie czerwona
-      if (correctValue && correctStat) {
-        className = 'green';  // Jeśli zarówno wartość, jak i statystyka są zgodne
-      } else if (correctStat) {
-        className = 'yellow';  // Jeśli statystyka jest poprawna, ale wartość nie
-      }
-      return `<td class="${className}">${value} (${statName})</td>`;
+    function getHighestStat(pokemon) {
+      const stats = pokemon.base;
+      const highestStatValue = Math.max(...Object.values(stats));
+      const highestStatName = Object.keys(stats).find(key => stats[key] === highestStatValue);
+      const secretStats = secretPokemon.base;
+      const secretHighestStatValue = Math.max(...Object.values(secretStats));
+      const secretHighestStatName = Object.keys(secretStats).find(key => secretStats[key] === secretHighestStatValue);
+      return { 
+        value: highestStatValue, 
+        name: highestStatName,
+        secretValue: secretHighestStatValue,
+        secretName: secretHighestStatName
+      };
     }
 
-    // Funkcja do określania kolorów dla typu1/2
-    function generateHint(guessValue, secretValue) {
-  let className = 'red';  // Domyślnie czerwona
+    function checkGuess() {
+      const guess = document.getElementById('guess').value.trim();
+      const guessPokemon = pokemonData.find(pokemon => pokemon.name.english.toLowerCase() === guess.toLowerCase());
 
-  if (guessValue === secretValue) {
-    className = 'green';  // Jeśli wartości są zgodne
-  } else if (guessValue === 'N/A' && secretValue === 'N/A') {
-    className = 'green';  // Oba nie mają wartości, więc są zgodne
-  } else if (guessValue !== 'N/A' && secretValue === 'N/A') {
-    className = 'red';  // Jeśli zgadywany Pokémon ma typ, a szukany nie
-  } else if (secretValue !== 'N/A' && guessValue === 'N/A') {
-    className = 'red';  // Jeśli szukany Pokémon ma typ, a zgadywany nie
-  } else {
-    // Sprawdzamy odwrotność, czyli jeśli typy są zamienione
-    className = 'yellow';  // Jeśli typy się zamieniają, ale są zgodne
-  }
+      if (!guessPokemon) {
+        document.getElementById('message').textContent = '❌ Pokémon not found!';
+        return;
+      }
 
-  return `<td class="${className}">${guessValue || 'N/A'}</td>`;
-}
+      const highestStat = getHighestStat(guessPokemon);
+
+      document.getElementById('message').textContent = guess === secretPokemon.name.english ? '🎉 Correct! You guessed the Pokémon!' : '❌ Wrong guess, try again!';
+
+      // Dodaj dane do tabeli
+      const row = `<tr>
+        <td><img src="${guessPokemon.image.thumbnail}" alt="${guessPokemon.name.english}"></td>
+        ${generateHint(guessPokemon.type[0], secretPokemon.type[0])}
+        ${generateHint(guessPokemon.type[1] || 'N/A', secretPokemon.type[1] || 'N/A')}
+        ${generateRegion(guessPokemon.id, secretPokemon.id)}
+        ${generateHighestStat(highestStat.value, highestStat.name, highestStat.value === highestStat.secretValue, highestStat.name === highestStat.secretName)}
+        ${generateHint(guessPokemon.profile.height, secretPokemon.profile.height)}
+        ${generateHint(guessPokemon.profile.weight, secretPokemon.profile.weight)}
+      </tr>`;
+
+      document.getElementById('hints-table').innerHTML += row;
+    }
   </script>
 </body>
 </html>
