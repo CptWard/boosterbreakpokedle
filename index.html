@@ -32,7 +32,6 @@
         <th>Pokémon</th>
         <th>Type 1</th>
         <th>Type 2</th>
-        <th>Evolution Stage</th>
         <th>Highest Stat</th>
         <th>Height</th>
         <th>Weight</th>
@@ -73,12 +72,11 @@
       // Dodaj dane do tabeli
       const row = `<tr>
         <td><img src="${guessPokemon.image.thumbnail}" alt="${guessPokemon.name.english}"></td>
-        <td>${guessPokemon.type[0]}</td>
-        <td>${guessPokemon.type[1] || 'N/A'}</td>
-        <td>${getEvolutionStage(guessPokemon.evolution)}</td>
-        <td>${highestStat}</td>
-        <td>${guessPokemon.profile.height}</td>
-        <td>${guessPokemon.profile.weight}</td>
+        ${generateHint(guessPokemon.type[0], secretPokemonData.type[0])}
+        ${generateHint(guessPokemon.type[1], secretPokemonData.type[1] || 'N/A')}
+        ${generateHint(highestStat, getHighestStat(secretPokemonData))}
+        ${generateHint(guessPokemon.profile.height, secretPokemonData.profile.height)}
+        ${generateHint(guessPokemon.profile.weight, secretPokemonData.profile.weight)}
       </tr>`;
 
       document.getElementById('hints-table').innerHTML += row;
@@ -91,11 +89,20 @@
       return highestStat;
     }
 
-    // Funkcja do uzyskania etapu ewolucji
-    function getEvolutionStage(evolution) {
-      if (evolution.prev) return 'Evolved from ' + evolution.prev[0];
-      if (evolution.next) return 'Evolves to ' + evolution.next[0][0];
-      return 'No evolution';
+    // Funkcja do generowania wskazówek z odpowiednimi kolorami
+    function generateHint(guessValue, secretValue) {
+      let className = 'red';  // Domyślnie czerwona
+      if (guessValue === secretValue) {
+        className = 'green';  // Jeśli wartości są identyczne
+      } else if (guessValue && secretValue) {
+        // Dla przypadków, w których wartości są podobne (np. typy, waga)
+        if (typeof guessValue === 'string' && secretValue.includes(guessValue.substring(0, 3))) {
+          className = 'yellow';  // Jeśli pierwszy fragment pasuje
+        } else if (typeof guessValue === 'number' && Math.abs(guessValue - secretValue) <= 0.5) {
+          className = 'yellow';  // Jeśli różnica w wartościach liczbowych jest mała
+        }
+      }
+      return `<td class="${className}">${guessValue || 'N/A'}</td>`;
     }
   </script>
 </body>
