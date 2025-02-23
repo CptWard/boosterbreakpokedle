@@ -85,8 +85,8 @@
       // Dodaj dane do tabeli
       const row = `<tr>
         <td><img src="${guessPokemon.image.thumbnail}" alt="${guessPokemon.name.english}"></td>
-        ${generateHint(guessPokemon.type[0], secretPokemonData.type[0])}
-        ${generateHint(guessPokemon.type[1], secretPokemonData.type[1] || 'N/A')}
+        ${generateHint(guessPokemon.type[0], secretPokemonData.type[0], guessPokemon.type[1], secretPokemonData.type[1])}
+        ${generateHint(guessPokemon.type[1], secretPokemonData.type[1], guessPokemon.type[0], secretPokemonData.type[0])}
         ${generateRegion(guessPokemon.id, secretPokemonData.id)}
         ${generateHighestStat(highestStat.value, highestStat.name, highestStat.value === highestStat.secretValue, highestStat.name === highestStat.secretName)}
         ${generateHint(guessPokemon.profile.height, secretPokemonData.profile.height)}
@@ -142,17 +142,12 @@
     }
 
     // Funkcja do generowania wskazówek z odpowiednimi kolorami
-    function generateHint(guessValue, secretValue) {
+    function generateHint(guessValue, secretValue, reverseGuessValue, reverseSecretValue) {
       let className = 'red';  // Domyślnie czerwona
-      if (guessValue === secretValue) {
+      if (guessValue === secretValue || reverseGuessValue === reverseSecretValue) {
         className = 'green';  // Jeśli wartości są identyczne
-      } else if (guessValue && secretValue) {
-        // Dla przypadków, w których wartości są podobne (np. typy, waga)
-        if (typeof guessValue === 'string' && secretValue.includes(guessValue.substring(0, 3))) {
-          className = 'yellow';  // Jeśli pierwszy fragment pasuje
-        } else if (typeof guessValue === 'number' && Math.abs(guessValue - secretValue) <= 0.5) {
-          className = 'yellow';  // Jeśli różnica w wartościach liczbowych jest mała
-        }
+      } else if (guessValue === reverseSecretValue || reverseGuessValue === secretValue) {
+        className = 'yellow';  // Jeśli typy są zamienione, ale zgodne
       }
       return `<td class="${className}">${guessValue || 'N/A'}</td>`;
     }
