@@ -22,7 +22,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Pokémon Guessing Game 2</h1>
+    <h1>Pokémon Guessing Game 3</h1>
     <input type="text" id="guess" placeholder="Guess the Pokémon">
     <button onclick="checkGuess()">Guess</button>
     <p id="message"></p>
@@ -149,11 +149,15 @@ function generateHint(guessValue, secretValue) {
   if (Array.isArray(secretValue)) {
     // Sprawdzamy, czy guessValue pasuje do type1 lub type2
     if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'yellow';  // Jeśli pasuje do pierwszego typu
+      className = 'green';  // Jeśli pasuje do pierwszego typu
     }
-    // Tylko wtedy sprawdzamy drugi typ, jeśli istnieje
+    // Sprawdzamy, czy guessValue pasuje do drugiego typu (reverse check)
     if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'yellow';  // Jeśli pasuje do drugiego typu
+      className = 'green';  // Jeśli pasuje do drugiego typu
+    }
+    // Sprawdzamy, czy guessValue pasuje do typu odwrotnego
+    if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase() || secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
+      className = 'yellow';  // Jeśli pasuje do odwrotnego typu
     }
   } else if (secretValue) {
     // Jeśli Pokémon ma tylko jeden typ
