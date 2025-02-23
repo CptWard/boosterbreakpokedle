@@ -145,30 +145,36 @@
 function generateHint(guessValue, secretValue) {
   let className = 'red';  // Domyślnie czerwona
 
-  // Sprawdzamy, czy secretValue jest tablicą (dwa typy)
+  // Sprawdzamy, czy secretValue jest tablicą (ma dwa typy)
   if (Array.isArray(secretValue)) {
-    // Sprawdzamy, czy guessValue pasuje do type1 lub type2
+    // Sprawdzamy, czy guessValue pasuje do pierwszego typu
     if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'green';  // Jeśli pasuje do pierwszego typu
+      className = 'green';  // Jeśli pasuje do typu1
     }
-    // Sprawdzamy, czy guessValue pasuje do drugiego typu (reverse check)
+    // Sprawdzamy, czy guessValue pasuje do drugiego typu
     if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'green';  // Jeśli pasuje do drugiego typu
+      className = 'green';  // Jeśli pasuje do typu2
     }
-    // Sprawdzamy, czy guessValue pasuje do typu odwrotnego
-    if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase() || secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
-      className = 'yellow';  // Jeśli pasuje do odwrotnego typu
+
+    // Teraz sprawdzamy odwrotne dopasowanie
+    // Typ1 Ekansa (Poison) w typ2 szukanego Pokémona
+    if (secretValue[0] && secretValue[0].toLowerCase() === guessValue.toLowerCase()) {
+      className = 'yellow';  // Jeżeli pasuje do typu2
+    }
+
+    // Typ2 Ekansa (Poison) w typ1 szukanego Pokémona
+    if (secretValue[1] && secretValue[1].toLowerCase() === guessValue.toLowerCase()) {
+      className = 'yellow';  // Jeżeli pasuje do typu1
     }
   } else if (secretValue) {
     // Jeśli Pokémon ma tylko jeden typ
     if (secretValue.toLowerCase() === guessValue.toLowerCase()) {
-      className = 'green';  // Jeśli zgadnięty typ pasuje do typowego typu
+      className = 'green';  // Jeśli zgadnięty typ pasuje do typu
     }
   }
 
   return `<td class="${className}">${guessValue || 'N/A'}</td>`;
 }
-
   </script>
 </body>
 </html>
