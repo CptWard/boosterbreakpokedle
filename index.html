@@ -88,7 +88,7 @@
         ${generateHint(guessPokemon.type[0], secretPokemonData.type[0])}
         ${generateHint(guessPokemon.type[1], secretPokemonData.type[1] || 'N/A')}
         ${generateRegion(guessPokemon.id)}
-        ${generateHint(highestStat.value, highestStat.name)}
+        ${generateHighestStat(highestStat.value, highestStat.name)}
         ${generateHint(guessPokemon.profile.height, secretPokemonData.profile.height)}
         ${generateHint(guessPokemon.profile.weight, secretPokemonData.profile.weight)}
       </tr>`;
@@ -113,6 +113,11 @@
         }
       }
       return `<td>Unknown</td>`;  // Jeśli ID nie pasuje do żadnego regionu
+    }
+
+    // Funkcja do generowania najwyższej statystyki
+    function generateHighestStat(value, statName) {
+      return `<td class="${value === undefined ? 'red' : 'green'}">${value} (${statName})</td>`;
     }
 
     // Funkcja do generowania wskazówek z odpowiednimi kolorami
