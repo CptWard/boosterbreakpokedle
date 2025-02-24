@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Rozszerzone Pokedle (Gen 1)</title>
+  <title>Rozszerzone „Pokedle” – 1. generacja (151)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -96,8 +96,11 @@
           <th>Nazwa</th>
           <th>Typ</th>
           <th>Generacja</th>
+          <th>Siedlisko</th>
+          <th>Kolor</th>
           <th>Wzrost (m)</th>
           <th>Waga (kg)</th>
+
         </tr>
       </thead>
       <tbody>
@@ -105,7 +108,6 @@
       </tbody>
     </table>
   </div>
-
   <script>
     /*************************************************
      *  PEŁNA LISTA POKÉMONÓW (GEN. 1: #1–#151)       *
@@ -978,7 +980,7 @@
 ];
 
 
-    // Zmienna przechowująca POKÉMONA-TAJEMNICĘ
+   // Zmienna przechowująca POKÉMONA-TAJEMNICĘ
     let secretPokemon = null;
     let guessCount = 0;
 
@@ -1101,7 +1103,7 @@
     }
 
     /**
-     * Dodaje wiersz do tabeli z wynikami prób.
+     * Funkcja obsługująca dodanie wiersza z wynikiem próby.
      */
     function addGuessRow(guessed, comparison) {
       guessCount++;
@@ -1149,6 +1151,16 @@
       }
       row.appendChild(genCell);
 
+        // Kolumna 8: siedlisko
+      const habitatCell = document.createElement('td');
+      habitatCell.textContent = guessed.habitat;
+      row.appendChild(habitatCell);
+
+      // Kolumna 9: kolor
+      const colorCell = document.createElement('td');
+      colorCell.textContent = guessed.color;
+      row.appendChild(colorCell);
+
       // Kolumna 6: wzrost
       const heightCell = document.createElement('td');
       heightCell.textContent = guessed.height + ` (${comparison.heightInfo})`;
@@ -1169,65 +1181,43 @@
       }
       row.appendChild(weightCell);
 
+    
+
       guessesTableBody.appendChild(row);
     }
 
-    /**
-     * Obsługa kliku przycisku "Zgaduj".
-     */
-    function handleGuess() {
-      const input = guessInput.value.trim();
-      if (!input) {
-        alert('Najpierw wpisz nazwę albo numer Pokémona.');
-        return;
-      }
-      const guessed = findPokemon(input);
-      if (!guessed) {
-        alert('Nie znaleziono takiego Pokémona w 1. generacji!');
-        return;
-      }
-
-      // Porównanie
-      const comparison = comparePokemons(guessed, secretPokemon);
-      // Dodanie wiersza w tabeli
-      addGuessRow(guessed, comparison);
-
-      // Czy trafiony?
-      if (comparison.nameCorrect) {
-        feedbackEl.textContent = `BRAWO! To faktycznie ${secretPokemon.name.toUpperCase()} (#${secretPokemon.id}).`;
-      } else {
-        feedbackEl.textContent = `To nie jest ${secretPokemon.name.toUpperCase()}. Próbuj dalej!`;
-      }
-      guessInput.value = '';
-      guessInput.focus();
-    }
-
-    /********************
-     * OBSŁUGA PRZYCISKÓW
-     ********************/
-
-    // 1. Ustawianie Pokémona (ręcznie)
-    setSecretBtn.addEventListener('click', () => {
-      const chosen = secretPokemonInput.value.trim();
-      if (!chosen) {
-        alert('Wpisz nazwę lub numer Pokémona z 1. generacji!');
-        return;
-      }
-      setSecret(chosen);
+    // Obsługa kliknięcia przycisku "Ustaw"
+    setSecretBtn.addEventListener('click', function() {
+      setSecret(secretPokemonInput.value);
     });
 
-    // 2. Losowanie Pokémona
-    randomSecretBtn.addEventListener('click', () => {
+    // Obsługa kliknięcia przycisku "Wylosuj"
+    randomSecretBtn.addEventListener('click', function() {
       setSecret();
     });
 
-    // 3. Zgadywanie
-    guessBtn.addEventListener('click', handleGuess);
-    guessInput.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') {
-        handleGuess();
+    // Obsługa zgadywania
+    guessBtn.addEventListener('click', function() {
+      const guess = guessInput.value.trim();
+      if (!guess) return;
+
+      const guessed = findPokemon(guess);
+      if (!guessed) {
+        alert('Nie znaleziono tego Pokémona!');
+        return;
+      }
+
+      const comparison = comparePokemons(guessed, secretPokemon);
+      addGuessRow(guessed, comparison);
+
+      // Pokazujemy odpowiednią wiadomość
+      if (comparison.nameCorrect) {
+        feedbackEl.textContent = `Brawo! Zgadłeś ${guessed.name}!`;
+      } else {
+        feedbackEl.textContent = `Nie, spróbuj ponownie.`;
       }
     });
   </script>
+
 </body>
 </html>
