@@ -1151,14 +1151,16 @@
       }
       row.appendChild(genCell);
 
-        // Kolumna 8: siedlisko
+       // Kolumna 8: siedlisko
       const habitatCell = document.createElement('td');
       habitatCell.textContent = guessed.habitat;
+      habitatCell.className = comparison.habitatInfo === 'poprawne' ? 'correct' : 'wrong';
       row.appendChild(habitatCell);
 
       // Kolumna 9: kolor
       const colorCell = document.createElement('td');
       colorCell.textContent = guessed.color;
+      colorCell.className = comparison.colorInfo === 'poprawny' ? 'correct' : 'wrong';
       row.appendChild(colorCell);
 
       // Kolumna 6: wzrost
